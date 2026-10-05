@@ -12,7 +12,8 @@ import {
   DriverStatus,
   VehicleStatus,
   MaintenanceRecord,
-  RouteStop
+  RouteStop,
+  User
 } from '../types';
 import {
   initialShipments,
@@ -24,6 +25,14 @@ import {
 } from '../data/mockData';
 
 interface LogisticsContextType {
+  currentUser: User | null;
+  users: User[];
+  login: (email: string, password: string) => { success: boolean; error?: string };
+  signup: (userData: Omit<User, 'id' | 'createdAt'>) => { success: boolean; error?: string };
+  logout: () => void;
+  deleteUser: (userId: string) => void;
+  updateUserProfile: (data: Partial<User>) => void;
+
   role: UserRole;
   setRole: (role: UserRole) => void;
   activeTab: string;
@@ -77,7 +86,51 @@ interface LogisticsContextType {
 const LogisticsContext = createContext<LogisticsContextType | undefined>(undefined);
 
 export const LogisticsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [role, setRole] = useState<UserRole>('admin');
+  // Authentication State: Clean initialized without test users
+  const [users, setUsers] = useState<User[]>(() => {
+    const saved = localStorage.getItem('logitrack_users');
+    if (saved) {
+      try {
+        const parsed: User[] = JSON.parse(saved);
+        // Ensure no test users exist
+        return parsed.filter(
+          u =>
+            !u.email.toLowerCase().includes('test') &&
+            !u.email.toLowerCase().includes('demo') &&
+            !u.id.toLowerCase().includes('test')
+        );
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('logitrack_current_user');
+    if (saved) {
+      try {
+        const parsed: User = JSON.parse(saved);
+        if (
+          parsed.email.toLowerCase().includes('test') ||
+          parsed.email.toLowerCase().includes('demo') ||
+          parsed.id.toLowerCase().includes('test')
+        ) {
+          localStorage.removeItem('logitrack_current_user');
+          return null;
+        }
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [role, setRole] = useState<UserRole>(() => {
+    return currentUser ? currentUser.role : 'admin';
+  });
+
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(null);
@@ -118,6 +171,20 @@ export const LogisticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return saved ? JSON.parse(saved) : initialNotifications;
   });
 
+  // Sync users and current user to localStorage
+  useEffect(() => {
+    localStorage.setItem('logitrack_users', JSON.stringify(users));
+  }, [users]);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('logitrack_current_user', JSON.stringify(currentUser));
+      setRole(currentUser.role);
+    } else {
+      localStorage.removeItem('logitrack_current_user');
+    }
+  }, [currentUser]);
+
   // Sync to localStorage
   useEffect(() => {
     localStorage.setItem('logitrack_shipments', JSON.stringify(shipments));
@@ -138,6 +205,112 @@ export const LogisticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   useEffect(() => {
     localStorage.setItem('logitrack_notifications', JSON.stringify(notifications));
   }, [notifications]);
+
+  // Authentication Handlers
+  const signup = (userData: Omit<User, 'id' | 'createdAt'>): { success: boolean; error?: string } => {
+    const trimmedEmail = userData.email.trim().toLowerCase();
+    if (!trimmedEmail) {
+      return { success: false, error: 'Email address is required.' };
+    }
+    if (!userData.password || userData.password.length < 4) {
+      return { success: false, error: 'Password must be at least 4 characters.' };
+    }
+
+    const exists = users.some(u => u.email.toLowerCase() === trimmedEmail);
+    if (exists) {
+      return { success: false, error: 'An account with this email address already exists. Please log in instead.' };
+    }
+
+    const newUser: User = {
+      ...userData,
+      id: `usr-${Date.now()}`,
+      email: trimmedEmail,
+      createdAt: new Date().toISOString()
+    };
+
+    setUsers(prev => [...prev, newUser]);
+    setCurrentUser(newUser);
+    setRole(newUser.role);
+
+    // Route to appropriate view based on role
+    if (newUser.role === 'driver') {
+      setActiveTab('driver-app');
+    } else if (newUser.role === 'customer') {
+      setActiveTab('customer-portal');
+    } else {
+      setActiveTab('dashboard');
+    }
+
+    addNotification(
+      'Account Created Successfully',
+      `Welcome to LogiTrack, ${newUser.name}! You are signed in as ${newUser.role.toUpperCase()}.`,
+      'success'
+    );
+
+    return { success: true };
+  };
+
+  const login = (email: string, password: string): { success: boolean; error?: string } => {
+    const trimmedEmail = email.trim().toLowerCase();
+    const user = users.find(u => u.email.toLowerCase() === trimmedEmail);
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'No account found with this email. Please check your spelling or sign up to create your user.'
+      };
+    }
+
+    if (user.password !== password) {
+      return {
+        success: false,
+        error: 'Incorrect password. Please verify and try again.'
+      };
+    }
+
+    setCurrentUser(user);
+    setRole(user.role);
+
+    if (user.role === 'driver') {
+      setActiveTab('driver-app');
+    } else if (user.role === 'customer') {
+      setActiveTab('customer-portal');
+    } else {
+      setActiveTab('dashboard');
+    }
+
+    addNotification(
+      'Signed In',
+      `Welcome back, ${user.name}! Active role: ${user.role}.`,
+      'info'
+    );
+
+    return { success: true };
+  };
+
+  const logout = () => {
+    const userName = currentUser?.name || 'User';
+    setCurrentUser(null);
+    localStorage.removeItem('logitrack_current_user');
+    addNotification('Logged Out', `Goodbye ${userName}. You have safely signed out of LogiTrack.`, 'info');
+  };
+
+  const deleteUser = (userId: string) => {
+    setUsers(prev => prev.filter(u => u.id !== userId));
+    if (currentUser?.id === userId) {
+      logout();
+    }
+  };
+
+  const updateUserProfile = (data: Partial<User>) => {
+    if (!currentUser) return;
+    const updated = { ...currentUser, ...data };
+    setCurrentUser(updated);
+    setUsers(prev => prev.map(u => (u.id === updated.id ? updated : u)));
+    if (data.role) {
+      setRole(data.role);
+    }
+  };
 
   const addNotification = (
     title: string,
@@ -580,6 +753,13 @@ export const LogisticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   return (
     <LogisticsContext.Provider
       value={{
+        currentUser,
+        users,
+        login,
+        signup,
+        logout,
+        deleteUser,
+        updateUserProfile,
         role,
         setRole,
         activeTab,

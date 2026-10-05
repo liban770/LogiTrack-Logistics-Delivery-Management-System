@@ -200,3 +200,16 @@ export interface AppNotification {
   read: boolean;
   linkShipmentId?: string;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  phone?: string;
+  company?: string;
+  avatar?: string;
+  createdAt: string;
+}
+

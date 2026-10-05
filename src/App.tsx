@@ -16,10 +16,16 @@ import { DriverPortalView } from './components/driver-portal/DriverPortalView';
 import { CustomerPortalView } from './components/customer-portal/CustomerPortalView';
 import { NewShipmentModal } from './components/shipments/NewShipmentModal';
 import { ProofOfDeliveryModal } from './components/pod/ProofOfDeliveryModal';
+import { AuthView } from './components/auth/AuthView';
 
 const AppContent: React.FC = () => {
-  const { activeTab } = useLogistics();
+  const { activeTab, currentUser } = useLogistics();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Authentication Guard: Show login/signup screen if no user is signed in
+  if (!currentUser) {
+    return <AuthView />;
+  }
 
   const renderActiveView = () => {
     switch (activeTab) {

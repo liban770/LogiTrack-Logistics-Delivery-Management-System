@@ -13,7 +13,10 @@ import {
   Menu,
   X,
   PlayCircle,
-  RotateCcw
+  RotateCcw,
+  LogOut,
+  User as UserIcon,
+  ShieldCheck
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -23,6 +26,8 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, isMobileMenuOpen }) => {
   const {
+    currentUser,
+    logout,
     role,
     setRole,
     activeTab,
@@ -39,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, isMobileMenu
   } = useLogistics();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -235,59 +240,122 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, isMobileMenu
               )}
             </div>
 
-            {/* Role Switcher (Crucial for testing all 4 roles described in spec) */}
+            {/* Authenticated User Profile & Logout Menu */}
             <div className="relative">
               <button
-                onClick={() => setIsRoleMenuOpen(!isRoleMenuOpen)}
-                className="flex items-center gap-2 pl-2 pr-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition-colors text-xs font-medium text-slate-800 focus:outline-none"
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                className="flex items-center gap-2 pl-2 pr-2.5 py-1.5 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200/80 transition-colors text-xs font-medium text-slate-800 focus:outline-none cursor-pointer"
+                aria-label="User profile and settings"
               >
-                <div className={`w-2.5 h-2.5 rounded-full ${roleLabels[role].color}`} />
-                <span className="hidden sm:inline font-semibold">{roleLabels[role].label}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                <div className="w-6 h-6 rounded-full bg-linear-to-br from-orange-500 to-orange-600 text-white flex items-center justify-center font-bold text-[10px] shadow-2xs">
+                  {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div className="text-left hidden sm:block">
+                  <div className="font-bold text-slate-900 leading-tight truncate max-w-[120px]">
+                    {currentUser?.name || 'User'}
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-medium capitalize">
+                    {roleLabels[role]?.label || role}
+                  </div>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
-              {isRoleMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-2.5 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                    Switch Active Role
+              {isProfileMenuOpen && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  {/* User Profile Card */}
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 mb-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-full bg-linear-to-br from-orange-500 to-orange-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+                        {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-slate-900 text-xs truncate">
+                          {currentUser?.name || 'Current User'}
+                        </div>
+                        <div className="text-[11px] text-slate-500 truncate font-mono">
+                          {currentUser?.email || ''}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-2.5 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
+                      <span className="text-slate-400">Account Role:</span>
+                      <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                        role === 'admin'
+                          ? 'bg-orange-100 text-orange-800'
+                          : role === 'dispatcher'
+                          ? 'bg-blue-100 text-blue-800'
+                          : role === 'driver'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-purple-100 text-purple-800'
+                      }`}>
+                        {roleLabels[role]?.label || role}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Switch Role Option */}
+                  <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Switch Active View / Role
                   </div>
                   {(Object.keys(roleLabels) as UserRole[]).map(r => (
                     <button
                       key={r}
                       onClick={() => {
                         setRole(r);
-                        setIsRoleMenuOpen(false);
+                        setIsProfileMenuOpen(false);
                         if (r === 'driver') setActiveTab('driver-app');
                         else if (r === 'customer') setActiveTab('customer-portal');
                       }}
-                      className={`w-full text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition-colors ${
+                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
                         role === r ? 'bg-orange-50 text-orange-700 font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
-                      <div>
-                        <div className="font-semibold flex items-center gap-1.5">
-                          <span className={`w-2 h-2 rounded-full ${roleLabels[r].color}`} />
-                          {roleLabels[r].label}
-                        </div>
-                        <div className="text-[10px] text-slate-400 pl-3.5">{roleLabels[r].desc}</div>
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${roleLabels[r].color}`} />
+                        <span>{roleLabels[r].label}</span>
                       </div>
                       {role === r && <span className="text-orange-600 text-xs">✓</span>}
                     </button>
                   ))}
-                  <div className="pt-1.5 mt-1.5 border-t border-slate-100">
+
+                  <div className="pt-2 mt-2 border-t border-slate-100 space-y-1">
                     <button
                       onClick={() => {
                         resetDemoData();
-                        setIsRoleMenuOpen(false);
+                        setIsProfileMenuOpen(false);
                       }}
-                      className="w-full text-left px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg flex items-center gap-1.5"
+                      className="w-full text-left px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
                     >
-                      <RotateCcw className="w-3 h-3" /> Reset Demo Seed
+                      <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Reset Demo Seed</span>
+                    </button>
+
+                    {/* Logout Button */}
+                    <button
+                      onClick={() => {
+                        setIsProfileMenuOpen(false);
+                        logout();
+                      }}
+                      className="w-full text-left px-2.5 py-2 text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Log Out</span>
                     </button>
                   </div>
                 </div>
               )}
             </div>
+
+            {/* Quick Log Out Icon Button */}
+            <button
+              onClick={logout}
+              title="Sign Out / Log Out"
+              aria-label="Sign Out"
+              className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
 
             {/* Primary Action Button: New Shipment */}
             <button

@@ -14,7 +14,8 @@ import {
   Smartphone,
   UserCheck,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  LogOut
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -31,7 +32,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, onCloseMobile })
     vehicles,
     role,
     setRole,
-    resetDemoData
+    resetDemoData,
+    currentUser,
+    logout
   } = useLogistics();
 
   const delayedCount = shipments.filter(s => s.status === 'Delayed').length;
@@ -242,23 +245,52 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, onCloseMobile })
           </div>
         </div>
 
-        {/* Bottom Profile / Quick Info */}
-        <div className="p-3 border-t border-slate-200 bg-slate-50/70">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-            <span className="flex items-center gap-1.5">
+        {/* Bottom Profile & Logout Info */}
+        <div className="p-3 border-t border-slate-200 bg-slate-50/70 space-y-2">
+          {currentUser && (
+            <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-linear-to-br from-orange-500 to-orange-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                  {currentUser.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold text-slate-900 truncate">
+                    {currentUser.name}
+                  </div>
+                  <div className="text-[10px] text-slate-400 truncate font-mono">
+                    {currentUser.email}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                <span className="text-[10px] font-semibold text-orange-600 uppercase tracking-wider">
+                  {currentUser.role}
+                </span>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="text-[11px] font-semibold text-red-600 hover:text-red-700 flex items-center gap-1 cursor-pointer"
+                  title="Sign out of LogiTrack"
+                >
+                  <LogOut className="w-3 h-3" /> Sign Out
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+            <span className="flex items-center gap-1.5 text-[11px]">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>System Online</span>
             </span>
             <button
               onClick={resetDemoData}
               title="Reset state to initial sample records"
-              className="text-[11px] text-slate-400 hover:text-slate-700 flex items-center gap-1"
+              className="text-[11px] text-slate-400 hover:text-slate-700 flex items-center gap-1 cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" /> Reset
             </button>
-          </div>
-          <div className="text-[11px] text-slate-400">
-            LogiTrack Enterprise v1.2 · 2026
           </div>
         </div>
       </aside>
