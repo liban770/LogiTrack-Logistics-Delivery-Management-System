@@ -1,0 +1,6 @@
+{
+  "name": "LogiTrack",
+  "description": "Logistics & Delivery Management System for real-time shipment tracking, driver dispatch, vehicle fleet management, and delivery verification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
