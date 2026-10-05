@@ -194,7 +194,7 @@ export const RoutesView: React.FC = () => {
 
             <div className="p-3 bg-blue-50/70 border border-blue-200/60 rounded-xl text-xs text-blue-900">
               <span className="font-bold block mb-1">Route Dispatch Note:</span>
-              Stops 1 and 2 completed. Driver Ahmed Mohamed is currently en route to Stop 3 (St. Jude Regional Hospital).
+              Stops 1 and 2 completed. Driver {activeRoute.assignedDriverName || 'Marcus Vance'} is currently en route to Stop 3 (St. Jude Regional Hospital).
             </div>
           </div>
         </div>

@@ -188,7 +188,7 @@ export const AuthView: React.FC = () => {
                     required
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    placeholder="e.g. Ahmed Liban Mohamed"
+                    placeholder="e.g. Alex Morgan"
                     className="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 font-medium"
                   />
                 </div>
@@ -205,7 +205,7 @@ export const AuthView: React.FC = () => {
                     required
                     value={signupEmail}
                     onChange={e => setSignupEmail(e.target.value)}
-                    placeholder="e.g. ahmedlibanmohamed89@gmail.com"
+                    placeholder="e.g. alex.morgan@example.com"
                     className="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 font-medium font-mono"
                   />
                 </div>

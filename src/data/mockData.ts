@@ -42,8 +42,8 @@ export const initialWarehouses: Warehouse[] = [
 export const initialDrivers: Driver[] = [
   {
     id: 'drv-1',
-    name: 'Ahmed Mohamed',
-    email: 'ahmed.mohamed@logitrack.io',
+    name: 'Marcus Vance',
+    email: 'marcus.vance@logitrack.io',
     phone: '+1 (312) 555-7821',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
     licenseNumber: 'IL-CDL-9844201',
@@ -150,7 +150,7 @@ export const initialVehicles: Vehicle[] = [
     model: 'Mercedes-Benz eSprinter Cargo 2025',
     year: 2025,
     assignedDriverId: 'drv-1',
-    assignedDriverName: 'Ahmed Mohamed',
+    assignedDriverName: 'Marcus Vance',
     capacityKg: 1600,
     capacityM3: 14.0,
     currentMileageKm: 18450,
@@ -325,7 +325,7 @@ export const initialShipments: Shipment[] = [
     currentLocation: '3.2 km from destination (W Harrison St)',
     currentCoordinates: { lat: 41.874, lng: -87.671 },
     assignedDriverId: 'drv-1',
-    assignedDriverName: 'Ahmed Mohamed',
+    assignedDriverName: 'Marcus Vance',
     assignedVehicleId: 'veh-1',
     assignedVehicleReg: 'LT-EV-104',
     warehouseId: 'wh-1',
@@ -347,8 +347,8 @@ export const initialShipments: Shipment[] = [
         timestamp: '2026-10-04T08:30:00Z',
         status: 'Picked Up',
         location: 'Apex Distribution Warehouse',
-        description: 'Cargo verified and collected by driver Ahmed Mohamed.',
-        actor: 'Ahmed Mohamed'
+        description: 'Cargo verified and collected by driver Marcus Vance.',
+        actor: 'Marcus Vance'
       },
       {
         id: 'th-3',
@@ -465,7 +465,7 @@ export const initialShipments: Shipment[] = [
     currentLocation: 'Delivered to Recipient',
     currentCoordinates: { lat: 41.8954, lng: -87.6186 },
     assignedDriverId: 'drv-1',
-    assignedDriverName: 'Ahmed Mohamed',
+    assignedDriverName: 'Marcus Vance',
     assignedVehicleId: 'veh-1',
     assignedVehicleReg: 'LT-EV-104',
     warehouseId: 'wh-1',
@@ -480,7 +480,7 @@ export const initialShipments: Shipment[] = [
       gpsCoordinates: { lat: 41.8954, lng: -87.6186 },
       driverNotes: 'Delivered to direct staff. Cryo box seals verified unbroken.',
       verifiedByDriverId: 'drv-1',
-      driverName: 'Ahmed Mohamed'
+      driverName: 'Marcus Vance'
     },
     trackingHistory: [
       {
@@ -509,7 +509,7 @@ export const initialShipments: Shipment[] = [
         timestamp: '2026-10-03T13:20:00Z',
         status: 'Out for Delivery',
         location: 'Chicago, IL',
-        description: 'Driver Ahmed Mohamed approaching delivery address.'
+        description: 'Driver Marcus Vance approaching delivery address.'
       },
       {
         id: 'th-305',
@@ -517,7 +517,7 @@ export const initialShipments: Shipment[] = [
         status: 'Delivered',
         location: 'Northwestern Diagnostic Center',
         description: 'Delivered. Recipient signature and photo POD secured.',
-        actor: 'Ahmed Mohamed'
+        actor: 'Marcus Vance'
       }
     ]
   },
@@ -701,7 +701,7 @@ export const initialRoutes: Route[] = [
     id: 'rt-1',
     name: 'Loop & Medical District Express',
     assignedDriverId: 'drv-1',
-    assignedDriverName: 'Ahmed Mohamed',
+    assignedDriverName: 'Marcus Vance',
     assignedVehicleId: 'veh-1',
     assignedVehicleReg: 'LT-EV-104',
     startLocation: 'Central Logistics Hub (Chicago)',
@@ -816,7 +816,7 @@ export const initialNotifications: AppNotification[] = [
   {
     id: 'notif-2',
     title: 'Out for Delivery',
-    message: 'Ahmed Mohamed started final delivery run for Critical Medical Shipment LT-2026-000184.',
+    message: 'Marcus Vance started final delivery run for Critical Medical Shipment LT-2026-000184.',
     timestamp: '45 mins ago',
     type: 'info',
     read: false,

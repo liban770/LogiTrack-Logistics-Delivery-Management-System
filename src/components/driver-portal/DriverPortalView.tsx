@@ -25,7 +25,7 @@ export const DriverPortalView: React.FC = () => {
     addNotification
   } = useLogistics();
 
-  // Active driver context (defaulting to Ahmed Mohamed drv-1)
+  // Active driver context (defaulting to first driver)
   const [activeDriverId, setActiveDriverId] = useState(drivers[0]?.id || 'drv-1');
   const currentDriver = drivers.find(d => d.id === activeDriverId) || drivers[0];
 

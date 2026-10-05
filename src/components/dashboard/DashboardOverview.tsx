@@ -409,7 +409,7 @@ export const DashboardOverview: React.FC = () => {
 
             <div className="absolute bottom-1/4 left-1/2 flex flex-col items-center">
               <span className="w-3 h-3 rounded-full bg-blue-600 border border-white relative z-10" />
-              <span className="text-[9px] text-blue-200 font-mono mt-1 bg-slate-900/80 px-1 rounded">Ahmed M.</span>
+              <span className="text-[9px] text-blue-200 font-mono mt-1 bg-slate-900/80 px-1 rounded">Marcus V.</span>
             </div>
 
             <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 backdrop-blur-xs text-[10px] text-white rounded font-mono group-hover:bg-orange-600 transition-colors">
